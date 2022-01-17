@@ -8,17 +8,6 @@ data "aws_ami" "ubuntu_server_image_latest" {
   }
 }
 
-
-resource "tls_private_key" "this" {
-  algorithm = "RSA"
-  rsa_bits  = 4096
-}
-
-resource "aws_key_pair" "this" {
-  key_name   = var.ssh_key_name
-  public_key = tls_private_key.this.public_key_openssh
-}
-
 resource "aws_instance" "this" {
   count = var.host_ammount
 
@@ -27,7 +16,7 @@ resource "aws_instance" "this" {
 
   security_groups = [aws_security_group.this.name]
 
-  key_name = aws_key_pair.this.key_name
+  key_name = var.ssh_key_name
 
   tags = {
     Name = "Sandbox host ${count.index}" 
